@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-// 정식 Supabase 클라이언트 연결
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -16,7 +15,6 @@ export default function Recommendations() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 1. 창고에서 최신 등록자 1명 꺼내오기
                 const { data: sData, error: sError } = await supabase
                     .from('seniors')
                     .select('*')
@@ -32,7 +30,6 @@ export default function Recommendations() {
                 const currentSenior = sData[0]
                 setSenior(currentSenior)
 
-                // 2. 일자리 목록 꺼내와서 점수 계산하기
                 const { data: jData, error: jError } = await supabase.from('jobs').select('*')
                 if (jError) throw jError
 
@@ -46,17 +43,16 @@ export default function Recommendations() {
                     setJobs(scored)
                 }
             } catch (error) {
-                console.error("데이터 불러오기 실패:", error)
+                console.error("데이터 오류:", error)
             } finally {
-                setLoading(false) // 로딩 끝
+                setLoading(false)
             }
         }
-
         fetchData()
     }, [])
 
     if (loading) return <p className="p-20 text-2xl text-center font-bold">데이터를 불러오는 중입니다...</p>
-    if (!senior) return <p className="p-20 text-2xl text-center font-bold text-red-600">등록된 시니어 정보가 없습니다. 가입을 먼저 진행해주세요.</p>
+    if (!senior) return <p className="p-20 text-2xl text-center font-bold text-red-600">등록된 정보가 없습니다.</p>
 
     return (
         <div className="p-10 bg-gray-100 min-h-screen">
